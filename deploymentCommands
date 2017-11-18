@@ -1,0 +1,179 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red251\green2\blue7;\red127\green127\blue127;\red255\green255\blue255;
+\red127\green127\blue127;\red0\green0\blue0;\red253\green128\blue8;\red0\green3\blue255;\red255\green0\blue255;
+\red251\green0\blue255;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c14902\c0;\csgenericrgb\c49804\c49804\c49804;\cssrgb\c100000\c100000\c100000;
+\cssrgb\c56863\c56863\c56863;\cssrgb\c0\c0\c0;\cssrgb\c100000\c57647\c0;\cssrgb\c1569\c20000\c100000;\csgenericrgb\c100000\c0\c100000;
+\cssrgb\c100000\c25098\c100000;}
+\margl1440\margr1440\vieww17140\viewh12220\viewkind0
+\deftab720
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf2 \expnd0\expndtw0\kerning0
+0. this \
+1. edit settings.py in your project per platform instructions\
+=> push to GitHub //do include requirements.txt in the same directory as manage.py\
+=> go to where you want your project. This script renames old project to Python_Django_Deployment_Registration_backup, but feel free to change that\
+2. search and replace the following three fields below: Python_Django_Deployment_Registration LoginAndRegistration \cf3 \cb4 54.89.183.8\
+	with your own \{\{repoName\}\}, \{projectName\}\}, \{\{public IP\}\}\
+3. copy and paste each of the following command into your terminal that is connected to your AWS instance\
+	for EOT commands, do sudo vim \{\{file path\}\}, and copy and paste the included lines //find me if unclear about this one\cf2 \cb1 \
+	echo \'93running command \'85 \'93  is for debugging purposes and can be ignored at this time\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 sudo apt-get update
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 sudo apt-get install python-pip python-dev nginx git\
+sudo apt-get update
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 sudo pip install virtualenv\
+echo \'93running command \cf2 mv Python_Django_Deployment_Registration Python_Django_Deployment_Registration_backup\cf5 \'93\cf2 \
+mv Python_Django_Deployment_Registration Python_Django_Deployment_Registration_backup\
+\cf5 echo \'93running command \'93\cf2 \
+git clone
+\f1\fs24 \cf6  {\field{\*\fldinst{HYPERLINK "https://github.com/kegplant/Python_Django_Deployment_Registration"}}{\fldrslt 
+\f0\fs20 \cf2 \ul \ulc2 https://github.com/kegplant/}}
+\f0\fs20 \cf2 \ul \ulc2 Python_Django_Deployment_Registration
+\f1\fs24 \cf6 \ulnone \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 cd
+\f1\fs24  
+\f0\fs20 \cf7 \cb4 Python_Django_Deployment_Registration\cf6 \cb1 /\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 echo \'93running command virtualenv venv
+\f1\fs24 \cf3  --always-copy
+\f0\fs20 \cf5 \'93\cf6 \
+\cf5 virtualenv\cf3  venv
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 echo \'93running command \cf8 source venv/bin/activate\cf5 \'93
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf8 source venv/bin/activate\
+\cf5 echo \'93running command pip install -r requirements.txt\'93\cf8 \
+\cf5 pip install -r requirements.txt\
+echo \'93running command pip install django bcrypt django-extensions\'93
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 pip install django bcrypt django-extensions\
+echo \'93running command pip install gunicorn\'93
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 pip install gunicorn\
+echo \'93running command python
+\f1\fs24 \cf6  {\field{\*\fldinst{HYPERLINK "http://manage.py/"}}{\fldrslt 
+\f0\fs20 \cf5 \ul \ulc5 manage.py}} 
+\f0\fs20 \cf5 collectstatic\'93
+\f1\fs24 \cf6 \
+
+\f0\fs20 \cf5 python
+\f1\fs24 \cf6  {\field{\*\fldinst{HYPERLINK "http://manage.py/"}}{\fldrslt 
+\f0\fs20 \cf5 \ul \ulc5 manage.py}} 
+\f0\fs20 \cf5 collectstatic\
+echo \'93running command \cf8 deactivate\cf5 \'93
+\f1\fs24 \cf9 \
+
+\f0\fs20 \cf8 deactivate\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf10 \cb4 sudo cat <<EOT > /etc/systemd/system/gunicorn.service\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 [Unit]\cf10 \
+\cf3 Description=gunicorn daemon\
+After=network.target\
+[Service]\
+User=ubuntu\
+Group=www-data\
+WorkingDirectory=/home/ubuntu/Python_Django_Deployment_Registration\
+ExecStart=/home/ubuntu/Python_Django_Deployment_Registration/venv/bin/gunicorn --workers 3 --bind unix:/home/ubuntu/Python_Django_Deployment_Registration/LoginAndRegistration.sock LoginAndRegistration.wsgi:application\
+[Install]\
+WantedBy=multi-user.target\cf10 \
+EOT\
+echo \'93gunicorn.service updated\'94\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 \cb4 sudo systemctl stop gunicorn\cf5 \cb1 \'93\cf10 \cb4 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf6 sudo systemctl stop gunicorn\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 sudo systemctl daemon-reload\cf5 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 sudo systemctl daemon-reload\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 echo \'93running command \cf6 \cb4 sudo systemctl start gunicorn\cf5 \cb1 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 \cb4 sudo systemctl start gunicorn\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 sudo systemctl enable gunicorn\cf5 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 sudo systemctl enable gunicorn
+\f1\fs24 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf10 \cb4 sudo cat <<EOT > /etc/nginx/sites-available/\cf7 LoginAndRegistration\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf3 server \{\
+  listen 80;\
+  server_name 54.89.183.8;\
+  location = /favicon.ico \{ access_log off; log_not_found off; \}\
+  location /static/ \{\
+      root /home/ubuntu/Python_Django_Deployment_Registration;\
+  \}\
+  location / \{\
+      include proxy_params;\
+      proxy_pass http://unix:/home/ubuntu/Python_Django_Deployment_Registration/LoginAndRegistration.sock;\
+  \}\
+\}\cf7 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf9 EOT\
+echo \'93nginx available sites-available updated\'94\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 \cb4 sudo rm /etc/nginx/sites-enabled/*\cf5 \cb1 \'93\cf9 \cb4 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf6 sudo rm /etc/nginx/sites-enabled/*\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 \cb4 sudo ln -s /etc/nginx/sites-available/\cf7 LoginAndRegistration
+\f1\fs24 \cf6 \cb1  
+\f0\fs20 \cb4 /etc/nginx/sites-enabled\cf5 \cb1 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 \cb4 sudo ln -s /etc/nginx/sites-available/\cf7 LoginAndRegistration
+\f1\fs24 \cf6 \cb1  
+\f0\fs20 \cb4 /etc/nginx/sites-enabled
+\f1\fs24 \cb1  \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf5 echo \'93running command \cf6 \cb4 sudo nginx -t\cf5 \cb1 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 \cb4 sudo nginx -t\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 \cb1 echo \'93running command \cf6 sudo service nginx restart\cf5 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 sudo service nginx restart\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 echo \'93running command \cf6 sudo service nginx status\cf5 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 sudo service nginx status\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf5 echo \'93running command \cf6 sudo systemctl status gunicorn\cf5 \'93
+\f1\fs24 \cf6 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs20 \cf6 sudo systemctl status gunicorn\
+cd ..\'a0
+\f1\fs24 \
+}
